@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api';
 
 export default function Login() {
   const [username, setUsername] = useState('');
@@ -20,7 +20,7 @@ export default function Login() {
     setError('');
 
     try {
-      const response = await axios.post('http://127.0.0.1:8000/api/token/', {
+      const response = await api.post('token/', {
         username,
         password
       });

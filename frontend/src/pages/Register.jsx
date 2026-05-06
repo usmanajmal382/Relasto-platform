@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api';
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -31,10 +31,10 @@ export default function Register() {
     setError('');
 
     try {
-      await axios.post('http://127.0.0.1:8000/api/accounts/register/', formData);
+      await api.post('accounts/register/', formData);
 
       // Registration successful! Now log them in automatically
-      const loginRes = await axios.post('http://127.0.0.1:8000/api/token/', {
+      const loginRes = await api.post('token/', {
         username: formData.username,
         password: formData.password
       });
