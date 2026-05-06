@@ -19,6 +19,15 @@ from django.urls import path, include
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from django.conf import settings
 from django.conf.urls.static import static
+from django.core.management import call_command
+from django.http import HttpResponse
+
+def run_migrations(request):
+    try:
+        call_command('migrate', no_input=True)
+        return HttpResponse("Migrations successfully applied!")
+    except Exception as e:
+        return HttpResponse(f"Migration failed: {str(e)}", status=500)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -31,6 +40,7 @@ urlpatterns = [
     path('api/accounts/', include('accounts.urls')),
     path('api/properties/', include('properties.urls')),
     path('api/interactions/', include('interactions.urls')),
+    path('api/migrate/', run_migrations),
 ]
 
 if settings.DEBUG:
