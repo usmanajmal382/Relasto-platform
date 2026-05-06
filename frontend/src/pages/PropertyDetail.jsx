@@ -111,15 +111,15 @@ export default function PropertyDetail() {
             <div className="flex space-x-6 sm:space-x-8">
               <div className="text-center">
                 <Bed className="w-6 h-6 mx-auto text-gray-400 mb-2" />
-                <p className="font-bold text-gray-900 text-sm sm:text-base">3 <span className="text-xs sm:text-sm font-normal text-gray-500">Beds</span></p>
+                <p className="font-bold text-gray-900 text-sm sm:text-base">{property.bedrooms} <span className="text-xs sm:text-sm font-normal text-gray-500">Beds</span></p>
               </div>
               <div className="text-center">
                 <Bath className="w-6 h-6 mx-auto text-gray-400 mb-2" />
-                <p className="font-bold text-gray-900 text-sm sm:text-base">2 <span className="text-xs sm:text-sm font-normal text-gray-500">Baths</span></p>
+                <p className="font-bold text-gray-900 text-sm sm:text-base">{property.bathrooms} <span className="text-xs sm:text-sm font-normal text-gray-500">Baths</span></p>
               </div>
               <div className="text-center">
                 <Square className="w-6 h-6 mx-auto text-gray-400 mb-2" />
-                <p className="font-bold text-gray-900 text-sm sm:text-base">2,500 <span className="text-xs sm:text-sm font-normal text-gray-500">SqFt</span></p>
+                <p className="font-bold text-gray-900 text-sm sm:text-base">{property.sqft.toLocaleString()} <span className="text-xs sm:text-sm font-normal text-gray-500">SqFt</span></p>
               </div>
             </div>
           </div>
@@ -157,8 +157,14 @@ export default function PropertyDetail() {
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
               <h3 className="text-lg font-bold text-gray-900 mb-4">Listed By</h3>
               <div className="flex items-center space-x-4">
-                <div className="w-16 h-16 rounded-full bg-orange-100 border-2 border-brand-primary flex items-center justify-center text-xl font-bold text-brand-primary">
-                  {property.agent?.first_name?.charAt(0) || 'A'}
+                <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-brand-primary flex items-center justify-center bg-orange-50">
+                  {property.agent?.profile?.profile_picture ? (
+                    <img src={property.agent.profile.profile_picture} className="w-full h-full object-cover" alt="Agent" />
+                  ) : (
+                    <span className="text-xl font-bold text-brand-primary uppercase">
+                      {property.agent?.first_name?.charAt(0) || 'A'}
+                    </span>
+                  )}
                 </div>
                 <div>
                   <Link to={`/agents/${property.agent?.id}`} className="text-xl font-bold text-gray-900 hover:text-brand-primary transition">

@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://127.0.0.1:8000/api/',
+  baseURL: import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api/',
 });
 
 // Request interceptor to automatically add the JWT token to every request
@@ -30,7 +30,7 @@ api.interceptors.response.use(
       
       if (refreshToken) {
         try {
-          const response = await axios.post('http://127.0.0.1:8000/api/token/refresh/', {
+          const response = await axios.post(`${api.defaults.baseURL}token/refresh/`, {
             refresh: refreshToken
           });
           

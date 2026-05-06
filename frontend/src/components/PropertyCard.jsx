@@ -40,22 +40,26 @@ export default function PropertyCard({ property }) {
         <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-6 py-4 border-y border-gray-100">
           <div className="flex flex-col items-center justify-center text-gray-600">
             <Bed className="w-4 h-4 sm:w-5 sm:h-5 mb-1 text-gray-400" />
-            <span className="text-xs sm:text-sm font-semibold">3 Beds</span>
+            <span className="text-xs sm:text-sm font-semibold">{property.bedrooms} Beds</span>
           </div>
           <div className="flex flex-col items-center justify-center text-gray-600 border-x border-gray-100">
             <Bath className="w-4 h-4 sm:w-5 sm:h-5 mb-1 text-gray-400" />
-            <span className="text-xs sm:text-sm font-semibold">2 Baths</span>
+            <span className="text-xs sm:text-sm font-semibold">{property.bathrooms} Baths</span>
           </div>
           <div className="flex flex-col items-center justify-center text-gray-600">
             <Square className="w-4 h-4 sm:w-5 sm:h-5 mb-1 text-gray-400" />
-            <span className="text-xs sm:text-sm font-semibold">2000 sqft</span>
+            <span className="text-xs sm:text-sm font-semibold">{property.sqft} sqft</span>
           </div>
         </div>
 
         <div className="mt-auto flex items-center justify-between pt-2">
           <div className="flex items-center space-x-3">
-            <div className="bg-orange-100 w-10 h-10 rounded-full flex items-center justify-center text-brand-primary">
-              <User className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-full overflow-hidden border border-brand-primary/20 flex items-center justify-center bg-orange-50">
+              {property.agent?.profile?.profile_picture ? (
+                <img src={property.agent.profile.profile_picture} className="w-full h-full object-cover" alt="Agent" />
+              ) : (
+                <User className="w-5 h-5 text-brand-primary" />
+              )}
             </div>
             <div>
               <p className="text-xs text-gray-500">Agent</p>

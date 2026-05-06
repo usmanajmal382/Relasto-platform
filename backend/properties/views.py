@@ -11,6 +11,8 @@ class IsAgentOwnerOrReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:
             return True
+        if request.user.is_staff:
+            return True
         # For PropertyFeature, the agent is on the related property
         if hasattr(obj, 'property'):
             return obj.property.agent == request.user

@@ -16,7 +16,10 @@ export default function AddProperty() {
     price: '',
     status: 'sale',
     property_type: 'residential',
-    address: ''
+    address: '',
+    bedrooms: 0,
+    bathrooms: 0,
+    sqft: 0
   });
 
   const [imageFile, setImageFile] = useState(null);
@@ -74,7 +77,7 @@ export default function AddProperty() {
     <div className="bg-brand-bg min-h-screen py-12">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 animate-fade-in">
         
-        <div className="bg-white rounded-3xl p-10 md:p-14 shadow-xl border border-gray-100 relative overflow-hidden">
+        <div className="bg-white rounded-3xl p-6 md:p-14 shadow-xl border border-gray-100 relative overflow-hidden">
           {/* Decorative background element */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-orange-50 rounded-full blur-3xl -mr-20 -mt-20 z-0"></div>
           
@@ -145,35 +148,58 @@ export default function AddProperty() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Property Type</label>
-                    <select 
-                      name="property_type"
-                      value={formData.property_type}
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Bedrooms</label>
+                    <input 
+                      type="number" 
+                      name="bedrooms"
+                      required
+                      min="0"
+                      value={formData.bedrooms}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary transition bg-gray-50 focus:bg-white appearance-none"
-                    >
-                      <option value="residential">Residential</option>
-                      <option value="commercial">Commercial</option>
-                      <option value="industrial">Industrial</option>
-                      <option value="agricultural">Agricultural</option>
-                    </select>
+                      className="w-full px-4 py-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary transition bg-gray-50 focus:bg-white"
+                    />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Address</label>
-                    <div className="relative">
-                      <MapPin className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                      <input 
-                        type="text" 
-                        name="address"
-                        required
-                        value={formData.address}
-                        onChange={handleInputChange}
-                        placeholder="123 Main St, City, ST" 
-                        className="w-full pl-12 pr-4 py-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary transition bg-gray-50 focus:bg-white"
-                      />
-                    </div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Bathrooms</label>
+                    <input 
+                      type="number" 
+                      name="bathrooms"
+                      required
+                      min="0"
+                      value={formData.bathrooms}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary transition bg-gray-50 focus:bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Sq Ft</label>
+                    <input 
+                      type="number" 
+                      name="sqft"
+                      required
+                      min="0"
+                      value={formData.sqft}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary transition bg-gray-50 focus:bg-white"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Address</label>
+                  <div className="relative">
+                    <MapPin className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <input 
+                      type="text" 
+                      name="address"
+                      required
+                      value={formData.address}
+                      onChange={handleInputChange}
+                      placeholder="123 Main St, City, ST" 
+                      className="w-full pl-12 pr-4 py-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary transition bg-gray-50 focus:bg-white"
+                    />
                   </div>
                 </div>
 

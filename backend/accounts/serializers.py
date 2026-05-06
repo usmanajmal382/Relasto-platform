@@ -7,14 +7,14 @@ User = get_user_model()
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = ('is_agent', 'phone_number', 'address', 'bio')
+        fields = ('is_agent', 'phone_number', 'address', 'bio', 'profile_picture')
 
 class UserSerializer(serializers.ModelSerializer):
     profile = ProfileSerializer(required=False)
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'profile')
+        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'is_staff', 'profile')
 
     def update(self, instance, validated_data):
         profile_data = validated_data.pop('profile', None)

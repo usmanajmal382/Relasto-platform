@@ -35,7 +35,7 @@ export default function Home() {
   return (
     <div>
       {/* Hero Section */}
-      <section className="relative h-[700px] flex items-center justify-center overflow-hidden animate-fade-in">
+      <section className="relative h-[600px] md:h-[700px] flex items-center justify-center overflow-hidden animate-fade-in">
         <div className="absolute inset-0 z-0">
           <img 
             src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=2000&q=80" 
@@ -46,10 +46,10 @@ export default function Home() {
         </div>
         
         <div className="relative z-10 text-center px-4 max-w-5xl mx-auto animate-slide-up" style={{ animationDelay: '0.2s' }}>
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-extrabold text-white mb-6 tracking-tight drop-shadow-2xl">
+          <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-extrabold text-white mb-6 tracking-tight drop-shadow-2xl">
             Find your <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-brand-primary">dream home</span> today.
           </h1>
-          <p className="text-lg md:text-2xl text-gray-200 mb-12 font-light max-w-3xl mx-auto drop-shadow-md">
+          <p className="text-base sm:text-lg md:text-2xl text-gray-200 mb-12 font-light max-w-3xl mx-auto drop-shadow-md">
             Browse thousands of premium properties to find the perfect fit for your lifestyle.
           </p>
           

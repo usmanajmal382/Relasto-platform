@@ -22,6 +22,9 @@ class Property(models.Model):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES)
     property_type = models.CharField(max_length=20, choices=TYPE_CHOICES)
     address = models.TextField()
+    bedrooms = models.IntegerField(default=0)
+    bathrooms = models.IntegerField(default=0)
+    sqft = models.IntegerField(default=0)
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

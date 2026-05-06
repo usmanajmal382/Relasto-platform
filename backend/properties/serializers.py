@@ -26,7 +26,8 @@ class PropertySerializer(serializers.ModelSerializer):
         model = Property
         fields = (
             'id', 'agent', 'slug', 'title', 'description', 'price', 
-            'status', 'property_type', 'address', 'created_at', 'updated_at',
+            'status', 'property_type', 'address', 'bedrooms', 'bathrooms', 'sqft',
+            'created_at', 'updated_at',
             'images', 'features'
         )
         read_only_fields = ('slug',)
