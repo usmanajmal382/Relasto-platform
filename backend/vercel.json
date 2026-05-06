@@ -12,8 +12,5 @@
       "src": "/(.*)",
       "dest": "backend_core/wsgi.py"
     }
-  ],
-  "scripts": {
-    "build": "sh build.sh"
-  }
+  ]
 }
