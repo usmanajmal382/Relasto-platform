@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import VisitRequest, Review
+from .models import VisitRequest, Review, Notification
 from accounts.serializers import UserSerializer
 from properties.serializers import PropertySerializer
 
@@ -30,7 +30,7 @@ class VisitRequestSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'user', 'property', 'property_id', 'agent', 'agent_id', 
             'contact_name', 'contact_email', 'contact_phone', 
-            'preferred_date', 'status', 'created_at'
+            'preferred_date', 'message', 'status', 'created_at'
         )
         read_only_fields = ('user', 'property', 'agent', 'status')
         depth = 1 # Automatically serializes one level deep for read fields
@@ -46,3 +46,8 @@ class VisitRequestSerializer(serializers.ModelSerializer):
             agent_id=agent_id, 
             **validated_data
         )
+
+class NotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notification
+        fields = ('id', 'title', 'message', 'is_read', 'created_at')

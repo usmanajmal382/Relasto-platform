@@ -33,9 +33,33 @@ class VisitRequest(models.Model):
     contact_phone = models.CharField(max_length=20)
     preferred_date = models.DateTimeField()
     
+    message = models.TextField(blank=True, null=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+class Notification(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='notifications')
+    title = models.CharField(max_length=255)
+    message = models.TextField()
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
     def __str__(self):
-        return f"Visit Request for {self.property.title} by {self.contact_name}"
+        return f"Notification for {self.user.username}: {self.title}"
+
+# Signals to trigger notifications
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+@receiver(post_save, sender=VisitRequest)
+def create_visit_notification(sender, instance, created, **kwargs):
+    if created:
+        Notification.objects.create(
+            user=instance.agent,
+            title="New Visit Request",
+            message=f"{instance.contact_name} requested a visit for '{instance.property.title}' on {instance.preferred_date.strftime('%Y-%m-%d %H:%M')}. Message: {instance.message or 'No message provided.'}"
+        )

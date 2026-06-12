@@ -11,6 +11,9 @@ import Dashboard from './pages/Dashboard';
 import Contact from './pages/Contact';
 import AddProperty from './pages/AddProperty';
 
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
+
 function App() {
   return (
     <Router>
@@ -23,6 +26,8 @@ function App() {
           <Route path="/agents/:id" element={<AgentProfile />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password/:uid/:token" element={<ResetPassword />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/dashboard/add-property" element={<AddProperty />} />
           <Route path="/contact" element={<Contact />} />

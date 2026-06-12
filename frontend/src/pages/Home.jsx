@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search } from 'lucide-react';
+import { Search, Compass, ShieldCheck, Zap, ArrowRight, Star } from 'lucide-react';
 import api from '../api';
 import PropertyCard from '../components/PropertyCard';
 
@@ -11,10 +11,12 @@ export default function Home() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Scroll to top
+    window.scrollTo(0, 0);
+
     // Fetch latest properties for the featured section
     api.get('properties/?ordering=-created_at&limit=3')
       .then(res => {
-        // Handle pagination if applicable
         const data = res.data.results || res.data;
         setFeaturedProperties(data.slice(0, 3));
         setLoading(false);
@@ -33,94 +35,143 @@ export default function Home() {
   };
 
   return (
-    <div>
-      {/* Hero Section */}
-      <section className="relative h-[600px] md:h-[700px] flex items-center justify-center overflow-hidden animate-fade-in">
+    <div className="bg-brand-bg">
+      {/* Premium Hero Section */}
+      <section className="relative h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img 
-            src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=2000&q=80" 
+            src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=2400&q=80" 
             alt="Luxury Mansion" 
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover scale-110 animate-fade-in"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/80"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-brand-secondary/80 via-brand-secondary/40 to-brand-bg"></div>
         </div>
         
-        <div className="relative z-10 text-center px-4 max-w-5xl mx-auto animate-slide-up" style={{ animationDelay: '0.2s' }}>
-          <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-extrabold text-white mb-6 tracking-tight drop-shadow-2xl">
-            Find your <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-brand-primary">dream home</span> today.
+        {/* Decorative Floating Elements */}
+        <div className="absolute top-1/4 left-10 w-64 h-64 bg-brand-primary/20 rounded-full blur-[100px] animate-pulse"></div>
+        <div className="absolute bottom-1/4 right-10 w-96 h-96 bg-orange-500/10 rounded-full blur-[120px]"></div>
+
+        <div className="relative z-10 text-center px-4 max-w-6xl mx-auto animate-slide-up pt-16 md:pt-12">
+          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-black uppercase tracking-[0.3em] mb-10 shadow-2xl">
+            <Star className="w-3 h-3 mr-2 text-yellow-400 fill-current" />
+            The Future of Living
+          </div>
+          
+          <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-9xl font-black text-white mb-10 tracking-tighter leading-none drop-shadow-2xl">
+            Modern <span className="text-gradient drop-shadow-none italic">Estates</span>
+            <br />For Elite Living.
           </h1>
-          <p className="text-base sm:text-lg md:text-2xl text-gray-200 mb-12 font-light max-w-3xl mx-auto drop-shadow-md">
-            Browse thousands of premium properties to find the perfect fit for your lifestyle.
+          
+          <p className="text-lg md:text-2xl text-gray-300 mb-16 font-medium max-w-2xl mx-auto drop-shadow-lg leading-relaxed">
+            Experience the pinnacle of luxury with our curated collection of high-end real estate.
           </p>
           
-          <form onSubmit={handleSearch} className="bg-white/95 backdrop-blur-md p-3 rounded-3xl md:rounded-full flex flex-col md:flex-row items-center shadow-2xl max-w-3xl mx-auto transition-transform hover:scale-[1.02] duration-300 gap-3 md:gap-0">
-            <div className="flex items-center w-full md:w-auto flex-1">
-              <div className="pl-4 md:pl-6 pr-2 md:pr-4 text-brand-primary">
-                <Search className="w-6 h-6 md:w-7 md:h-7" />
-              </div>
+          <form onSubmit={handleSearch} className="glass-dark p-3 rounded-[32px] flex flex-col md:flex-row items-center shadow-2xl max-w-4xl mx-auto border border-white/10 group transition-all duration-500 hover:border-brand-primary/30 gap-4 md:gap-0">
+            <div className="flex items-center w-full md:w-auto flex-1 px-4">
+              <Search className="w-6 h-6 text-brand-primary group-hover:scale-110 transition-transform" />
               <input 
                 type="text" 
-                placeholder="Search by city, neighborhood..." 
-                className="flex-1 py-3 md:py-4 px-2 outline-none text-brand-text text-base md:text-lg bg-transparent font-medium w-full"
+                placeholder="Search by city, neighborhood, or lifestyle..." 
+                className="flex-1 py-4 md:py-6 px-6 outline-none text-white text-lg bg-transparent font-medium w-full placeholder:text-gray-500"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
             <button 
               type="submit" 
-              className="w-full md:w-auto bg-brand-primary text-white px-8 md:px-10 py-4 md:py-5 rounded-xl md:rounded-full font-bold text-base md:text-lg hover:bg-brand-primary-hover transition-colors shadow-lg shadow-brand-primary/30"
+              className="w-full md:w-auto bg-brand-primary text-white px-12 md:px-16 py-5 md:py-7 rounded-[24px] font-black uppercase tracking-widest text-sm hover:bg-orange-600 transition-all shadow-brand hover:shadow-brand/40 transform hover:-translate-y-1"
             >
-              Search
+              Search Now
             </button>
           </form>
+        </div>
+
+        {/* Scroll Indicator */}
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4">
+          <div className="w-[1px] h-20 bg-gradient-to-b from-brand-primary to-transparent"></div>
+          <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.4em] [writing-mode:vertical-lr]">Scroll To Discover</span>
         </div>
       </section>
 
       {/* Featured Properties Section */}
-      <section className="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-end mb-12">
-          <div>
-            <h2 className="text-4xl font-bold text-gray-900 mb-4 tracking-tight">Featured Properties</h2>
-            <p className="text-xl text-gray-500">Explore our handpicked selection of premium real estate.</p>
+      <section className="py-32 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+        <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
+          <div className="max-w-xl">
+            <h2 className="text-3xl md:text-5xl lg:text-6xl font-black text-brand-secondary mb-8 tracking-tighter">Featured <span className="text-brand-primary italic">Collections</span></h2>
+            <p className="text-xl text-gray-500 font-medium leading-relaxed">Our portfolio features only the most exclusive architectural masterpieces globally.</p>
           </div>
-          <Link to="/properties" className="hidden md:inline-block text-brand-primary font-bold hover:text-orange-700 transition">
-            View All Properties &rarr;
+          <Link to="/properties" className="group flex items-center gap-4 bg-brand-secondary text-white px-10 py-5 rounded-[24px] font-black text-xs tracking-widest hover:bg-brand-primary transition-all shadow-premium">
+            VIEW ALL PORTFOLIO
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform" />
           </Link>
         </div>
 
         {loading ? (
-          <div className="flex justify-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-primary"></div>
+          <div className="flex justify-center py-40">
+            <div className="w-16 h-16 border-4 border-brand-primary/10 border-t-brand-primary rounded-full animate-spin"></div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredProperties.map(property => (
-              <PropertyCard key={property.id} property={property} />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+            {featuredProperties.map((property, idx) => (
+              <div key={property.id} className="animate-slide-up" style={{ animationDelay: `${0.2 * idx}s` }}>
+                <PropertyCard property={property} />
+              </div>
             ))}
           </div>
         )}
-        
-        <div className="mt-12 text-center md:hidden">
-          <Link to="/properties" className="inline-block border-2 border-brand-primary text-brand-primary font-bold px-8 py-3 rounded-full hover:bg-brand-primary hover:text-white transition">
-            View All Properties
-          </Link>
+      </section>
+
+      {/* Features Showcase */}
+      <section className="py-32 bg-white border-y border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-16">
+          <div className="text-center group">
+            <div className="w-20 h-20 bg-orange-50 rounded-[32px] flex items-center justify-center mx-auto mb-8 group-hover:bg-brand-primary group-hover:rotate-6 transition-all duration-500">
+              <Compass className="w-10 h-10 text-brand-primary group-hover:text-white" />
+            </div>
+            <h3 className="text-2xl font-black text-brand-secondary mb-4">Elite Discovery</h3>
+            <p className="text-gray-500 font-medium leading-relaxed px-4">Find unique properties tailored specifically to your aesthetic and lifestyle preferences.</p>
+          </div>
+          <div className="text-center group">
+            <div className="w-20 h-20 bg-orange-50 rounded-[32px] flex items-center justify-center mx-auto mb-8 group-hover:bg-brand-primary group-hover:rotate-6 transition-all duration-500">
+              <ShieldCheck className="w-10 h-10 text-brand-primary group-hover:text-white" />
+            </div>
+            <h3 className="text-2xl font-black text-brand-secondary mb-4">Trusted Advisors</h3>
+            <p className="text-gray-500 font-medium leading-relaxed px-4">Our vetted agents are industry leaders dedicated to providing an unparalleled service experience.</p>
+          </div>
+          <div className="text-center group">
+            <div className="w-20 h-20 bg-orange-50 rounded-[32px] flex items-center justify-center mx-auto mb-8 group-hover:bg-brand-primary group-hover:rotate-6 transition-all duration-500">
+              <Zap className="w-10 h-10 text-brand-primary group-hover:text-white" />
+            </div>
+            <h3 className="text-2xl font-black text-brand-secondary mb-4">Instant Access</h3>
+            <p className="text-gray-500 font-medium leading-relaxed px-4">Request visits and connect with sellers in real-time through our state-of-the-art interface.</p>
+          </div>
         </div>
       </section>
       
-      {/* Call to Action */}
-      <section className="relative py-20 md:py-32 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-brand-secondary to-slate-800 z-0"></div>
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-brand-primary/20 rounded-full blur-3xl z-0"></div>
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-orange-400/20 rounded-full blur-3xl z-0"></div>
+      {/* High-Impact CTA */}
+      <section className="relative py-40 overflow-hidden">
+        <div className="absolute inset-0 bg-brand-secondary z-0">
+          <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=2400&q=80" className="w-full h-full object-cover opacity-20" alt="CTA BG" />
+        </div>
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-brand-secondary via-brand-secondary/90 to-transparent"></div>
         
-        <div className="relative z-10 max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6">Are you a Real Estate Agent?</h2>
-          <p className="text-lg md:text-xl text-gray-300 mb-10 md:mb-12 font-light max-w-2xl mx-auto">
-            Join Relasto today to list your premium properties and connect with thousands of highly qualified buyers globally.
-          </p>
-          <Link to="/register" className="inline-block bg-white text-brand-secondary px-8 md:px-12 py-4 md:py-5 rounded-full font-bold text-base md:text-lg hover:bg-gray-50 transition shadow-[0_0_40px_rgba(255,255,255,0.3)] hover:shadow-[0_0_60px_rgba(255,255,255,0.5)] transform hover:-translate-y-1">
-            Create Agent Account
-          </Link>
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-3xl">
+            <h2 className="text-4xl md:text-6xl lg:text-7xl font-black text-white mb-10 tracking-tighter leading-none animate-slide-up">
+              Own Your <br /><span className="text-brand-primary italic underline decoration-white/10">Masterpiece.</span>
+            </h2>
+            <p className="text-2xl text-gray-400 mb-16 font-medium leading-relaxed">
+              Join the Relasto network as an agent or a buyer and start your journey towards excellence.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-6">
+              <Link to="/register" className="bg-brand-primary text-white px-12 py-6 rounded-[24px] font-black tracking-widest text-sm hover:bg-orange-600 transition-all shadow-brand hover:shadow-brand/40 text-center">
+                JOIN THE NETWORK
+              </Link>
+              <Link to="/properties" className="glass-dark text-white px-12 py-6 rounded-[24px] font-black tracking-widest text-sm hover:bg-white/10 transition-all text-center">
+                EXPLORE PROPERTIES
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
     </div>

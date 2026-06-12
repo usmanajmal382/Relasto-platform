@@ -9,10 +9,12 @@
   --color-brand-text: #1e293b; /* Slate 800 */
   --color-brand-muted: #64748b; /* Slate 500 */
   
-  --font-sans: "Inter", "Outfit", system-ui, sans-serif;
+  --font-sans: "Inter", system-ui, sans-serif;
   
-  --animate-fade-in: fade-in 0.6s ease-out forwards;
-  --animate-slide-up: slide-up 0.5s ease-out forwards;
+  --animate-fade-in: fade-in 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  --animate-slide-up: slide-up 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  --animate-scale-in: scale-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  --animate-shimmer: shimmer 2s infinite linear;
   
   @keyframes fade-in {
     from { opacity: 0; }
@@ -20,13 +22,45 @@
   }
   
   @keyframes slide-up {
-    from { opacity: 0; transform: translateY(20px); }
+    from { opacity: 0; transform: translateY(30px); }
     to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes scale-in {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
   }
 }
 
 @layer base {
   body {
-    @apply bg-brand-bg text-brand-text font-sans antialiased selection:bg-brand-primary selection:text-white;
+    @apply bg-brand-bg text-brand-text font-sans antialiased selection:bg-brand-primary/30;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-white/70 backdrop-blur-md border border-white/20;
+  }
+  
+  .glass-dark {
+    @apply bg-black/40 backdrop-blur-xl border border-white/10;
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-primary to-orange-400;
+  }
+
+  .shadow-premium {
+    @apply shadow-[0_20px_50px_rgba(0,0,0,0.05)];
+  }
+
+  .shadow-brand {
+    @apply shadow-[0_10px_30px_rgba(234,88,12,0.2)];
   }
 }
