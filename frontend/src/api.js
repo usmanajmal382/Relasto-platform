@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'http://127.0.0.1:8000/api/',
+    baseURL: 'https://relasto-platform-production.up.railway.app/api/',
 });
 
 // Add a request interceptor to include the JWT token
