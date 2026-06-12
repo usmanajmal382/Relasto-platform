@@ -19,7 +19,7 @@ export default function PropertyDetail() {
   const [visitStatus, setVisitStatus] = useState('idle');
   const [errorMessage, setErrorMessage] = useState('');
 
-  const isAuthenticated = !!localStorage.getItem('access_token');
+  const isAuthenticated = !!localStorage.getItem('access');
 
   useEffect(() => {
     window.scrollTo(0, 0);

@@ -10,12 +10,12 @@ export default function Layout({ children }) {
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const isAuthenticated = !!localStorage.getItem('access_token');
+  const isAuthenticated = !!localStorage.getItem('access');
 
   const handleLogout = () => {
-    localStorage.removeItem('access_token');
+    localStorage.removeItem('access');
     localStorage.removeItem('refresh_token');
-    localStorage.removeItem('username');
+    localStorage.removeItem('user');
     navigate('/login');
   };
 

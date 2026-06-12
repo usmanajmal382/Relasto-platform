@@ -23,7 +23,7 @@ export default function Dashboard() {
   const [updateStatus, setUpdateStatus] = useState('idle');
   const [avatarFile, setAvatarFile] = useState(null);
 
-  const isAuthenticated = !!localStorage.getItem('access_token');
+  const isAuthenticated = !!localStorage.getItem('access');
 
   useEffect(() => {
     window.scrollTo(0, 0);

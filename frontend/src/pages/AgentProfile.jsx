@@ -17,7 +17,7 @@ export default function AgentProfile() {
   const [reviewStatus, setReviewStatus] = useState('idle');
   const [errorMessage, setErrorMessage] = useState('');
 
-  const isAuthenticated = !!localStorage.getItem('access_token');
+  const isAuthenticated = !!localStorage.getItem('access');
 
   useEffect(() => {
     // Scroll to top
