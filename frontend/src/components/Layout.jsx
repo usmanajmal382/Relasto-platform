@@ -183,7 +183,7 @@ export default function Layout({ children }) {
           </div>
         </div>
       </footer>
-      <ChatBot />
+      {isAuthenticated && <ChatBot />}
     </div>
   );
 }
