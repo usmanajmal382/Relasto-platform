@@ -110,7 +110,7 @@ export default function NotificationBell() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-4 w-96 bg-white rounded-[32px] shadow-2xl border border-gray-50 z-50 overflow-hidden animate-scale-in origin-top-right">
+        <div className="absolute -right-4 sm:right-0 mt-4 w-[320px] sm:w-96 bg-white rounded-[32px] shadow-2xl border border-gray-50 z-50 overflow-hidden animate-scale-in origin-top-right">
           <div className="p-6 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
             <div className="flex items-center gap-2">
                 <h3 className="text-xs font-black text-brand-secondary tracking-widest uppercase">Intel Stream</h3>

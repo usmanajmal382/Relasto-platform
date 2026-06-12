@@ -9,7 +9,7 @@ export default function PropertyCard({ property }) {
 
   return (
     <div className="bg-white rounded-[32px] overflow-hidden shadow-premium hover:shadow-brand/20 transition-all duration-500 border border-gray-50 group flex flex-col h-full transform hover:-translate-y-2 animate-scale-in">
-      <div className="relative h-72 overflow-hidden">
+      <div className="relative h-72 shrink-0 overflow-hidden">
         <img 
           src={imageUrl} 
           alt={property.title} 
@@ -71,7 +71,7 @@ export default function PropertyCard({ property }) {
           </p>
           
           <div className="flex items-center -space-x-3">
-             <div className="w-10 h-10 rounded-2xl overflow-hidden border-2 border-white shadow-md flex items-center justify-center bg-brand-secondary z-10">
+             <div className="w-10 h-10 shrink-0 rounded-2xl overflow-hidden border-2 border-white shadow-md flex items-center justify-center bg-brand-secondary z-10">
               {property.agent?.profile?.profile_picture ? (
                 <img src={property.agent.profile.profile_picture} className="w-full h-full object-cover" alt="Agent" />
               ) : (
