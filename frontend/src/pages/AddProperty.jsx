@@ -70,11 +70,7 @@ export default function AddProperty() {
     uploadData.append('is_primary', 'true');
 
     try {
-      await api.post(`properties/${createdPropertyId}/upload_image/`, uploadData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
+      await api.post(`properties/${createdPropertyId}/upload_image/`, uploadData);
       navigate('/dashboard');
     } catch (err) {
       console.error(err);

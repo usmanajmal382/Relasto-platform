@@ -106,9 +106,7 @@ export default function Dashboard() {
     try {
       const fd = new FormData();
       fd.append('profile_picture', avatarFile);
-      const res = await api.post('accounts/profile/', fd, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      const res = await api.post('accounts/profile/', fd);
       setProfile(res.data);
       setUpdateStatus('success');
       setAvatarFile(null);
