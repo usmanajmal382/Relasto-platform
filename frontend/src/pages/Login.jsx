@@ -29,9 +29,9 @@ export default function Login() {
         password
       });
 
-      localStorage.setItem('access_token', response.data.access);
+      localStorage.setItem('access', response.data.access);
       localStorage.setItem('refresh_token', response.data.refresh);
-      localStorage.setItem('username', username);
+      localStorage.setItem('user', JSON.stringify({ username }));
 
       window.location.href = from;
       
