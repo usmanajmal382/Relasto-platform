@@ -62,10 +62,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend_core.wsgi.application'
 
+# Try PUBLIC URL first (external), then fall back to internal DATABASE_URL
+DATABASE_URL = os.environ.get('DATABASE_PUBLIC_URL') or \
+               os.environ.get('DATABASE_URL', 'postgres://postgres:password@localhost:5432/relasto_db')
+
 DATABASES = {
-    'default': dj_database_url.parse(
-        os.environ.get('DATABASE_URL', 'postgres://postgres:password@localhost:5432/relasto_db')
-    )
+    'default': dj_database_url.parse(DATABASE_URL)
 }
 
 AUTH_PASSWORD_VALIDATORS = [
