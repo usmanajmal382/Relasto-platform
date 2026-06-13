@@ -115,7 +115,10 @@ if CLOUDINARY_CLOUD_NAME:
             'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
         },
     }
-    MEDIA_URL = f'https://res.cloudinary.com/{CLOUDINARY_CLOUD_NAME}/image/upload/'
+    # NOTE: Do NOT set MEDIA_URL to a Cloudinary URL here.
+    # cloudinary_storage returns fully-qualified URLs on its own.
+    # Setting MEDIA_URL to the Cloudinary base causes doubled URLs.
+    MEDIA_URL = '/media/'
 else:
     # Local development: use local filesystem
     STORAGES = {

@@ -5,9 +5,16 @@ from .models import Profile
 User = get_user_model()
 
 class ProfileSerializer(serializers.ModelSerializer):
+    profile_picture = serializers.SerializerMethodField()
+
     class Meta:
         model = Profile
         fields = ('is_agent', 'phone_number', 'address', 'bio', 'profile_picture')
+
+    def get_profile_picture(self, obj):
+        if obj.profile_picture:
+            return obj.profile_picture.url
+        return None
 
 class UserSerializer(serializers.ModelSerializer):
     profile = ProfileSerializer(required=False)

@@ -30,7 +30,7 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
             profile = request.user.profile
             profile.profile_picture = request.FILES['profile_picture']
             profile.save()
-            return Response(UserSerializer(request.user).data)
+            return Response(UserSerializer(request.user, context={'request': request}).data)
         return super().post(request, *args, **kwargs)
 
 class AgentListView(generics.ListAPIView):

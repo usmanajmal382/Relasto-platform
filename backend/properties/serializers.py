@@ -3,9 +3,16 @@ from .models import Property, PropertyImage, PropertyFeature
 from accounts.serializers import UserSerializer
 
 class PropertyImageSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+
     class Meta:
         model = PropertyImage
         fields = ('id', 'image', 'is_primary')
+
+    def get_image(self, obj):
+        if obj.image:
+            return obj.image.url
+        return None
 
 class PropertyFeatureSerializer(serializers.ModelSerializer):
     property_id = serializers.IntegerField(write_only=True)
