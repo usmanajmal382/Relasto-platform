@@ -1,8 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Navigate, Link } from 'react-router-dom';
-import { Home, Calendar, Plus, Clock, XCircle, User, LayoutDashboard, Settings, ShieldCheck, Mail, Camera, Trash2, ImagePlus, CheckCircle2 } from 'lucide-react';
+import { Home, Calendar, Plus, MapPin, CheckCircle2, Clock, XCircle, User, LayoutDashboard, Settings, ShieldCheck, Mail, LogOut, Camera } from 'lucide-react';
 import api from '../api';
-import toast from 'react-hot-toast';
+import PropertyCard from '../components/PropertyCard';
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('properties');
@@ -74,38 +74,6 @@ export default function Dashboard() {
       setVisitRequests(prev => prev.map(v => v.id === id ? { ...v, status } : v));
     } catch (err) {
       console.error("Error updating visit status:", err);
-    }
-  };
-
-  const deletePropertyImage = async (propertyId, imageId) => {
-    if (!window.confirm('Delete this image? This cannot be undone.')) return;
-    try {
-      await api.delete(`properties/${propertyId}/delete_image/${imageId}/`);
-      setProperties(prev => prev.map(p => {
-        if (p.id !== propertyId) return p;
-        return { ...p, images: p.images.filter(img => img.id !== imageId) };
-      }));
-      toast.success('Image deleted successfully');
-    } catch (err) {
-      console.error(err);
-      toast.error('Failed to delete image');
-    }
-  };
-
-  const uploadPropertyImage = async (propertyId, file) => {
-    if (!file) return;
-    const fd = new FormData();
-    fd.append('image', file);
-    try {
-      const res = await api.post(`properties/${propertyId}/upload_image/`, fd);
-      setProperties(prev => prev.map(p => {
-        if (p.id !== propertyId) return p;
-        return { ...p, images: [...p.images, res.data] };
-      }));
-      toast.success('Image uploaded to Cloudinary!');
-    } catch (err) {
-      console.error(err);
-      toast.error('Upload failed');
     }
   };
 
@@ -253,9 +221,9 @@ export default function Dashboard() {
         {/* Content Area */}
         <div className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
             {activeTab === 'properties' && isAgent && (
-              <div className="space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
                 {properties.length === 0 ? (
-                  <div className="bg-white rounded-[40px] p-24 text-center border border-gray-50 shadow-premium">
+                  <div className="lg:col-span-3 bg-white rounded-[40px] p-24 text-center border border-gray-50 shadow-premium">
                     <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-8">
                       <Home className="w-12 h-12 text-gray-300" />
                     </div>
@@ -267,13 +235,9 @@ export default function Dashboard() {
                   </div>
                 ) : (
                   properties.map((property, idx) => (
-                    <PropertyManageCard
-                      key={property.id}
-                      property={property}
-                      onDeleteImage={deletePropertyImage}
-                      onUploadImage={uploadPropertyImage}
-                      delay={idx * 0.1}
-                    />
+                    <div key={property.id} className="animate-fade-in" style={{ animationDelay: `${idx * 0.1}s` }}>
+                      <PropertyCard property={property} />
+                    </div>
                   ))
                 )}
               </div>
@@ -460,59 +424,6 @@ export default function Dashboard() {
                 </div>
               </div>
             )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function PropertyManageCard({ property, onDeleteImage, onUploadImage, delay }) {
-  return (
-    <div className="bg-white rounded-[40px] shadow-premium border border-gray-50 overflow-hidden animate-fade-in" style={{ animationDelay: `${delay}s` }}>
-      <div className="p-8 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
-        <h3 className="text-2xl font-black text-brand-secondary tracking-tight">{property.title}</h3>
-        <span className="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-brand-primary/10 text-brand-primary">
-          ${parseFloat(property.price).toLocaleString()}
-        </span>
-      </div>
-      
-      <div className="p-8">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          {property.images && property.images.map((img) => (
-            <div key={img.id} className="relative group rounded-2xl overflow-hidden aspect-square border border-gray-100 shadow-sm">
-              <img src={img.image} alt="Property" className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm">
-                <button 
-                  onClick={() => onDeleteImage(property.id, img.id)}
-                  className="bg-red-500 text-white p-3 rounded-xl hover:bg-red-600 transition-colors shadow-lg transform hover:scale-110"
-                >
-                  <Trash2 size={20} />
-                </button>
-              </div>
-            </div>
-          ))}
-          
-          <label className="border-2 border-dashed border-gray-200 rounded-2xl flex flex-col items-center justify-center aspect-square cursor-pointer hover:border-brand-primary hover:bg-brand-primary/5 transition-colors group">
-            <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center group-hover:bg-brand-primary/10 transition-colors mb-2">
-              <ImagePlus className="text-gray-400 group-hover:text-brand-primary transition-colors" size={24} />
-            </div>
-            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest group-hover:text-brand-primary transition-colors">Add Photo</span>
-            <input 
-              type="file" 
-              className="hidden" 
-              accept="image/*"
-              onChange={(e) => onUploadImage(property.id, e.target.files[0])}
-            />
-          </label>
-        </div>
-        
-        <div className="flex gap-4">
-           <Link to={`/properties/${property.id}`} className="flex-1 text-center bg-gray-50 text-gray-500 font-black py-4 rounded-2xl text-[10px] tracking-widest hover:bg-gray-100 transition">
-              VIEW LISTING
-           </Link>
-           <Link to={`/dashboard/edit-property/${property.id}`} className="flex-1 text-center bg-brand-secondary text-white font-black py-4 rounded-2xl text-[10px] tracking-widest hover:bg-slate-800 transition shadow-lg">
-              EDIT DETAILS
-           </Link>
         </div>
       </div>
     </div>
