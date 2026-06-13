@@ -26,7 +26,7 @@ class PropertyViewSet(viewsets.ModelViewSet):
     serializer_class = PropertySerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsAgentOwnerOrReadOnly]
     
-    filterset_fields = ['status', 'property_type']
+    filterset_fields = ['status', 'property_type', 'agent']
     search_fields = ['title', 'address']
     ordering_fields = ['price', 'created_at']
 
