@@ -37,10 +37,22 @@ export default function Register() {
     setError('');
 
     try {
+      // Step 1: Register the account
       await api.post('accounts/register/', formData);
 
-      toast.success('Registration successful! Please sign in.');
-      navigate('/login');
+      // Step 2: Auto-login using the same credentials
+      const tokenRes = await api.post('token/', {
+        username: formData.username,
+        password: formData.password,
+      });
+
+      // Step 3: Save tokens to localStorage
+      localStorage.setItem('access', tokenRes.data.access);
+      localStorage.setItem('refresh_token', tokenRes.data.refresh);
+
+      // Step 4: Navigate directly to dashboard
+      toast.success(`Welcome to Relasto, ${formData.first_name || formData.username}! 🎉`);
+      navigate('/dashboard');
       
     } catch (err) {
       console.error(err);
