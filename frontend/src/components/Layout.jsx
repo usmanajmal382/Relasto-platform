@@ -28,11 +28,14 @@ export default function Layout({ children }) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [location.pathname]);
 
+  const isAgentProfile = location.pathname.match(/^\/agents\/\d+$/);
+
   return (
     <div className="min-h-screen flex flex-col font-sans overflow-x-hidden selection:bg-brand-primary/20">
       <Toaster position="top-right" reverseOrder={false} />
-      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? 'py-4' : 'py-6'}`}>
-        <nav className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-500 ${scrolled ? 'glass-dark rounded-[32px] shadow-2xl mx-4 md:mx-auto' : 'bg-transparent'}`}>
+      {!isAgentProfile && (
+        <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? 'py-4' : 'py-6'}`}>
+          <nav className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-500 ${scrolled ? 'glass-dark rounded-[32px] shadow-2xl mx-4 md:mx-auto' : 'bg-transparent'}`}>
           <div className="h-16 flex items-center justify-between">
             <div className="flex items-center space-x-12">
               <Link to="/" className="text-2xl md:text-3xl font-black tracking-tighter flex items-center gap-3 z-50 group">
@@ -134,6 +137,7 @@ export default function Layout({ children }) {
           </div>
         )}
       </header>
+      )}
       
       <main className="flex-1 bg-brand-bg pt-0">
         {children}
