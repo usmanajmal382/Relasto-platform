@@ -15,6 +15,7 @@ class Profile(models.Model):
     phone_number = models.CharField(max_length=20, blank=True, null=True)
     address = models.TextField(blank=True, null=True)
     bio = models.TextField(blank=True, null=True)
+    agency_name = models.CharField(max_length=200, blank=True, null=True)
     # Stores the full Cloudinary URL directly — no ImageField, no storage backend needed
     profile_picture = models.URLField(max_length=500, blank=True, null=True)
 

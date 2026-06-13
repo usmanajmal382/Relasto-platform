@@ -10,7 +10,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ('is_agent', 'phone_number', 'address', 'bio', 'profile_picture')
+        fields = ('is_agent', 'phone_number', 'address', 'bio', 'profile_picture', 'agency_name')
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -35,6 +35,11 @@ class UserSerializer(serializers.ModelSerializer):
             profile.phone_number = profile_data.get('phone_number', profile.phone_number)
             profile.address = profile_data.get('address', profile.address)
             profile.bio = profile_data.get('bio', profile.bio)
+            profile.agency_name = profile_data.get('agency_name', profile.agency_name)
+            # Only update profile_picture if explicitly provided — never overwrite with blank
+            new_pic = profile_data.get('profile_picture')
+            if new_pic:
+                profile.profile_picture = new_pic
             profile.save()
 
         return instance
