@@ -1,37 +1,43 @@
 from rest_framework import generics, permissions, status
-from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser
+from rest_framework.parsers import MultiPartParser, FormParser
 from django.contrib.auth import get_user_model
 from .serializers import RegisterSerializer, UserSerializer
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
-from django.core.mail import send_mail
 from django.conf import settings
+from utils.cloudinary_upload import upload_image
 
 User = get_user_model()
+
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     permission_classes = (permissions.AllowAny,)
     serializer_class = RegisterSerializer
 
+
 class UserProfileView(generics.RetrieveUpdateAPIView):
     serializer_class = UserSerializer
     permission_classes = (permissions.IsAuthenticated,)
+    parser_classes = [MultiPartParser, FormParser]
 
     def get_object(self):
         return self.request.user
 
     def post(self, request, *args, **kwargs):
-        # We handle avatar upload separately or together
         if 'profile_picture' in request.FILES:
+            file = request.FILES['profile_picture']
+            # Upload directly to Cloudinary and get the real URL
+            image_url = upload_image(file, folder='profiles')
             profile = request.user.profile
-            profile.profile_picture = request.FILES['profile_picture']
+            profile.profile_picture = image_url
             profile.save()
             return Response(UserSerializer(request.user, context={'request': request}).data)
         return super().post(request, *args, **kwargs)
+
 
 class AgentListView(generics.ListAPIView):
     serializer_class = UserSerializer
@@ -40,15 +46,18 @@ class AgentListView(generics.ListAPIView):
     def get_queryset(self):
         return User.objects.filter(profile__is_agent=True).order_by('id')
 
+
 class AgentDetailView(generics.RetrieveAPIView):
     serializer_class = UserSerializer
     permission_classes = (permissions.AllowAny,)
     queryset = User.objects.filter(profile__is_agent=True)
 
+
 class UserListView(generics.ListAPIView):
     serializer_class = UserSerializer
     permission_classes = (IsAdminUser,)
     queryset = User.objects.all().order_by('-id')
+
 
 class PasswordResetRequestView(generics.GenericAPIView):
     permission_classes = (permissions.AllowAny,)
@@ -62,8 +71,6 @@ class PasswordResetRequestView(generics.GenericAPIView):
             user = User.objects.get(email=email)
             token = default_token_generator.make_token(user)
             uid = urlsafe_base64_encode(force_bytes(user.pk))
-            
-            # In a real app, you would send an email. For now, we'll print it to console.
             reset_link = f"http://localhost:5173/reset-password/{uid}/{token}"
             
             import sys
@@ -72,19 +79,10 @@ class PasswordResetRequestView(generics.GenericAPIView):
             print("----------------------------------------\n")
             sys.stdout.flush()
             
-            # Optionally send actual email if backend is configured
-            # send_mail(
-            #     "Password Reset Request",
-            #     f"Click here to reset your password: {reset_link}",
-            #     settings.DEFAULT_FROM_EMAIL,
-            #     [email],
-            #     fail_silently=True,
-            # )
-            
             return Response({"message": "If this email exists, a reset link has been sent."}, status=status.HTTP_200_OK)
         except User.DoesNotExist:
-            # We return 200 even if user doesn't exist for security (don't reveal email addresses)
             return Response({"message": "If this email exists, a reset link has been sent."}, status=status.HTTP_200_OK)
+
 
 class PasswordResetConfirmView(generics.GenericAPIView):
     permission_classes = (permissions.AllowAny,)

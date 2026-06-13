@@ -1,8 +1,11 @@
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.parsers import MultiPartParser, FormParser
 from .models import Property, PropertyImage, PropertyFeature
 from .serializers import PropertySerializer, PropertyImageSerializer, PropertyFeatureSerializer
+from utils.cloudinary_upload import upload_image
+
 
 class IsAgentOwnerOrReadOnly(permissions.BasePermission):
     """
@@ -13,17 +16,16 @@ class IsAgentOwnerOrReadOnly(permissions.BasePermission):
             return True
         if request.user.is_staff:
             return True
-        # For PropertyFeature, the agent is on the related property
         if hasattr(obj, 'property'):
             return obj.property.agent == request.user
         return obj.agent == request.user
+
 
 class PropertyViewSet(viewsets.ModelViewSet):
     queryset = Property.objects.all().order_by('-created_at')
     serializer_class = PropertySerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsAgentOwnerOrReadOnly]
     
-    # Filtering, Searching, Ordering
     filterset_fields = ['status', 'property_type']
     search_fields = ['title', 'address']
     ordering_fields = ['price', 'created_at']
@@ -31,28 +33,38 @@ class PropertyViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(agent=self.request.user)
 
-    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated, IsAgentOwnerOrReadOnly])
+    @action(
+        detail=True,
+        methods=['post'],
+        permission_classes=[permissions.IsAuthenticated, IsAgentOwnerOrReadOnly],
+        parser_classes=[MultiPartParser, FormParser]
+    )
     def upload_image(self, request, pk=None):
         property_obj = self.get_object()
         
-        if 'image' not in request.FILES:
-            return Response({'error': 'No image provided'}, status=status.HTTP_400_BAD_REQUEST)
-            
+        file = request.FILES.get('image')
+        if not file:
+            return Response({'error': 'No image file provided.'}, status=status.HTTP_400_BAD_REQUEST)
+        
         is_primary = request.data.get('is_primary', 'false').lower() == 'true'
         
-        # Manually create the PropertyImage, matching the profile upload logic which works perfectly
-        image_obj = PropertyImage(
+        # Upload directly to Cloudinary and get the real URL
+        image_url = upload_image(file, folder='properties')
+        
+        image_obj = PropertyImage.objects.create(
             property=property_obj,
-            image=request.FILES['image'],
+            image=image_url,
             is_primary=is_primary
         )
-        image_obj.save()
-        
         serializer = PropertyImageSerializer(image_obj)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    @action(detail=True, methods=['delete'], url_path='delete_image/(?P<image_id>[^/.]+)',
-            permission_classes=[permissions.IsAuthenticated, IsAgentOwnerOrReadOnly])
+    @action(
+        detail=True,
+        methods=['delete'],
+        url_path='delete_image/(?P<image_id>[^/.]+)',
+        permission_classes=[permissions.IsAuthenticated, IsAgentOwnerOrReadOnly]
+    )
     def delete_image(self, request, pk=None, image_id=None):
         property_obj = self.get_object()
         try:
@@ -69,5 +81,4 @@ class PropertyFeatureViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated, IsAgentOwnerOrReadOnly]
 
     def perform_create(self, serializer):
-        # We assume property is passed in the request data
         serializer.save()

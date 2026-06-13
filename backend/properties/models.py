@@ -39,7 +39,8 @@ class Property(models.Model):
 
 class PropertyImage(models.Model):
     property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='images')
-    image = models.ImageField(upload_to='properties/')
+    # Stores the full Cloudinary URL directly — no ImageField, no storage backend needed
+    image = models.URLField(max_length=500, blank=True, null=True)
     is_primary = models.BooleanField(default=False)
 
     def __str__(self):
@@ -47,8 +48,8 @@ class PropertyImage(models.Model):
 
 class PropertyFeature(models.Model):
     property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='features')
-    key = models.CharField(max_length=100) # e.g., 'Bedrooms', 'Pool'
-    value = models.CharField(max_length=100) # e.g., '3', 'Yes'
+    key = models.CharField(max_length=100)
+    value = models.CharField(max_length=100)
 
     def __str__(self):
         return f"{self.key}: {self.value}"

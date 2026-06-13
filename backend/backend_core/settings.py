@@ -24,7 +24,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_filters',
     'cloudinary',
-    'cloudinary_storage',
+    # NOTE: django-cloudinary-storage removed — we upload directly via Cloudinary SDK
     
     # Local Apps
     'accounts',
@@ -64,7 +64,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend_core.wsgi.application'
 
-# Try PUBLIC URL first (external), then fall back to internal DATABASE_URL
 DATABASE_URL = os.environ.get('DATABASE_PUBLIC_URL') or \
                os.environ.get('DATABASE_URL', 'postgres://postgres:password@localhost:5432/relasto_db')
 
@@ -73,18 +72,10 @@ DATABASES = {
 }
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
 LANGUAGE_CODE = 'en-us'
@@ -95,42 +86,31 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# Cloudinary for production media storage
+STORAGES = {
+    'default': {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+    },
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+    },
+}
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# Cloudinary — configured directly via SDK, no django-cloudinary-storage needed
 CLOUDINARY_CLOUD_NAME = os.environ.get('CLOUDINARY_CLOUD_NAME')
 CLOUDINARY_API_KEY = os.environ.get('CLOUDINARY_API_KEY')
 CLOUDINARY_API_SECRET = os.environ.get('CLOUDINARY_API_SECRET')
 
 if CLOUDINARY_CLOUD_NAME:
-    # Production: use Cloudinary for media storage
-    CLOUDINARY_STORAGE = {
-        'CLOUD_NAME': CLOUDINARY_CLOUD_NAME,
-        'API_KEY': CLOUDINARY_API_KEY,
-        'API_SECRET': CLOUDINARY_API_SECRET,
-    }
-    STORAGES = {
-        'default': {
-            'BACKEND': 'cloudinary_storage.storage.MediaCloudinaryStorage',
-        },
-        'staticfiles': {
-            'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
-        },
-    }
-    # NOTE: Do NOT set MEDIA_URL to a Cloudinary URL here.
-    # cloudinary_storage returns fully-qualified URLs on its own.
-    # Setting MEDIA_URL to the Cloudinary base causes doubled URLs.
-    MEDIA_URL = '/media/'
-else:
-    # Local development: use local filesystem
-    STORAGES = {
-        'default': {
-            'BACKEND': 'django.core.files.storage.FileSystemStorage',
-        },
-        'staticfiles': {
-            'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
-        },
-    }
-    MEDIA_URL = '/media/'
-    MEDIA_ROOT = BASE_DIR / 'media'
+    import cloudinary
+    cloudinary.config(
+        cloud_name=CLOUDINARY_CLOUD_NAME,
+        api_key=CLOUDINARY_API_KEY,
+        api_secret=CLOUDINARY_API_SECRET,
+        secure=True
+    )
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
