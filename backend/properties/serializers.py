@@ -5,26 +5,46 @@ from accounts.serializers import UserSerializer
 
 def _clean_cloudinary_url(raw_url):
     """
-    Extract a clean Cloudinary URL from a potentially doubled/malformed URL.
-    This handles cases where the stored DB value already contains a full
-    Cloudinary URL that then gets MEDIA_URL prepended to it again.
+    Return a clean, working Cloudinary URL from a potentially malformed one.
+
+    Known corruption patterns (caused by bad MEDIA_URL config in the past):
+      1. Doubled full URL:
+         https://res.cloudinary.com/X/image/upload/v1/media/https:/res.cloudinary.com/X/image/upload/...
+         → Extract from the last 'https://res.cloudinary.com' occurrence.
+
+      2. 'v1/media/' prefix injected by cloudinary_storage when MEDIA_URL was wrong:
+         https://res.cloudinary.com/X/image/upload/v1/media/properties/file.jpg
+         → Strip the 'v1/media/' segment after '/image/upload/'.
+
+      3. Clean URL — already correct, return as-is.
     """
     if not raw_url:
         return None
     url = str(raw_url)
-    # Already a clean, single Cloudinary URL — return as-is
-    if url.startswith('https://res.cloudinary.com') and url.count('res.cloudinary.com') == 1:
-        return url
-    # Handle doubled URL: pick everything from the last occurrence of the base
-    marker = 'https://res.cloudinary.com'
-    last_idx = url.rfind(marker)
-    if last_idx != -1:
-        return url[last_idx:]
-    # Handle single-slash mangled variant: http:/res.cloudinary.com
-    marker2 = 'http:/res.cloudinary.com'
-    last_idx2 = url.rfind(marker2)
-    if last_idx2 != -1:
-        return 'https://' + url[last_idx2 + len('http:/'):]
+
+    # Case 1: doubled URL — there are two 'res.cloudinary.com' occurrences
+    if url.count('res.cloudinary.com') > 1:
+        # Find the LAST occurrence and return from there
+        last_idx = url.rfind('https://res.cloudinary.com')
+        if last_idx != -1:
+            url = url[last_idx:]
+        else:
+            # single-slash variant e.g. http:/res.cloudinary.com
+            last_idx2 = url.rfind('http:/res.cloudinary.com')
+            if last_idx2 != -1:
+                url = 'https://' + url[last_idx2 + len('http:/'):]
+
+    # Case 2: 'v1/media/' injected — strip it
+    # Pattern: .../image/upload/v1/media/real/path.jpg
+    bad_segment = '/image/upload/v1/media/'
+    if bad_segment in url:
+        url = url.replace(bad_segment, '/image/upload/', 1)
+
+    # Case 3: '/media/' injected without version
+    bad_segment2 = '/image/upload/media/'
+    if bad_segment2 in url:
+        url = url.replace(bad_segment2, '/image/upload/', 1)
+
     return url
 
 
