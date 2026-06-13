@@ -36,7 +36,7 @@ export default function PropertyCard({ property, onDelete }) {
           </div>
         </div>
 
-        <div className="absolute bottom-6 left-6 right-6 translate-y-12 group-hover:translate-y-0 transition-transform duration-500">
+        <div className="absolute bottom-6 left-6 right-6 translate-y-0 md:translate-y-12 md:group-hover:translate-y-0 transition-transform duration-500">
            <Link 
             to={`/properties/${property.id}`}
             className="w-full bg-white text-brand-secondary font-black py-3 rounded-2xl flex items-center justify-center gap-2 hover:bg-brand-primary hover:text-white transition-colors shadow-xl"
@@ -75,8 +75,8 @@ export default function PropertyCard({ property, onDelete }) {
           </div>
         </div>
 
-        <div className="mt-auto flex items-center justify-between pt-4 border-t border-gray-50">
-          <p className="text-2xl font-black text-brand-primary tracking-tighter">
+        <div className="mt-auto flex items-center justify-between pt-4 border-t border-gray-50 gap-2">
+          <p className="text-xl md:text-2xl font-black text-brand-primary tracking-tighter truncate flex-1">
             ${parseFloat(property.price).toLocaleString()}
           </p>
           

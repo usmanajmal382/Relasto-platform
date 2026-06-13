@@ -238,11 +238,11 @@ export default function PropertyDetail() {
                     <ShieldCheck className="text-white w-5 h-5" />
                   </div>
                 </div>
-                <div className="text-center mb-10">
-                  <Link to={`/agents/${property.agent?.id}`} className="text-3xl font-black text-white hover:text-brand-primary transition tracking-tighter">
+                <div className="text-center mb-10 w-full px-2">
+                  <Link to={`/agents/${property.agent?.id}`} className="text-xl sm:text-2xl md:text-3xl font-black text-white hover:text-brand-primary transition tracking-tighter block truncate">
                     {property.agent?.first_name} {property.agent?.last_name}
                   </Link>
-                  <p className="text-gray-400 font-medium italic mt-2">Executive Real Estate Partner</p>
+                  <p className="text-gray-400 font-medium italic mt-2 text-xs sm:text-sm">Executive Real Estate Partner</p>
                 </div>
                 <Link to={`/agents/${property.agent?.id}`} className="w-full text-center bg-white/5 border border-white/10 text-white font-black py-5 rounded-2xl hover:bg-white hover:text-brand-secondary transition-all text-xs tracking-widest uppercase">
                   VIEW PARTNER DOSSIER

@@ -119,10 +119,10 @@ export default function AgentProfile() {
             {/* Info Container */}
             <div className="flex-1 text-center md:text-left">
               <div className="flex flex-col md:flex-row md:items-center gap-4 mb-4">
-                <h1 className="text-5xl md:text-6xl font-black text-white tracking-tight drop-shadow-sm">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight drop-shadow-sm break-words max-w-full">
                   {agent.first_name} {agent.last_name}
                 </h1>
-                <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-orange-400 text-sm font-bold uppercase tracking-wider">
+                <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-orange-400 text-sm font-bold uppercase tracking-wider self-center md:self-auto">
                   <Award className="w-4 h-4 mr-2" />
                   Top Rated Agent
                 </div>
