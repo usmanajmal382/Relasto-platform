@@ -1,51 +1,57 @@
 from rest_framework import serializers
+from django.conf import settings
 from .models import Property, PropertyImage, PropertyFeature
 from accounts.serializers import UserSerializer
 
 
-def _clean_cloudinary_url(raw_url):
+def build_cloudinary_url(image_field):
     """
-    Return a clean, working Cloudinary URL from a potentially malformed one.
-
-    Known corruption patterns (caused by bad MEDIA_URL config in the past):
-      1. Doubled full URL:
-         https://res.cloudinary.com/X/image/upload/v1/media/https:/res.cloudinary.com/X/image/upload/...
-         → Extract from the last 'https://res.cloudinary.com' occurrence.
-
-      2. 'v1/media/' prefix injected by cloudinary_storage when MEDIA_URL was wrong:
-         https://res.cloudinary.com/X/image/upload/v1/media/properties/file.jpg
-         → Strip the 'v1/media/' segment after '/image/upload/'.
-
-      3. Clean URL — already correct, return as-is.
+    Build a correct Cloudinary URL directly from the stored field name,
+    completely bypassing cloudinary_storage's .url method which doubles URLs.
+    
+    The stored name in DB can be:
+      - Clean relative path:  'properties/photo.jpg'
+      - Full URL (corrupted):  'https://res.cloudinary.com/.../properties/photo.jpg'
+      - Mangled full URL:      'https:/res.cloudinary.com/.../...'
+    
+    We always extract the clean relative path, then build the URL ourselves.
     """
-    if not raw_url:
+    if not image_field:
         return None
-    url = str(raw_url)
 
-    # Case 1: doubled URL — there are two 'res.cloudinary.com' occurrences
-    if url.count('res.cloudinary.com') > 1:
-        # Find the LAST occurrence and return from there
-        last_idx = url.rfind('https://res.cloudinary.com')
-        if last_idx != -1:
-            url = url[last_idx:]
-        else:
-            # single-slash variant e.g. http:/res.cloudinary.com
-            last_idx2 = url.rfind('http:/res.cloudinary.com')
-            if last_idx2 != -1:
-                url = 'https://' + url[last_idx2 + len('http:/'):]
+    name = str(image_field.name if hasattr(image_field, 'name') else image_field)
 
-    # Case 2: 'v1/media/' injected — strip it
-    # Pattern: .../image/upload/v1/media/real/path.jpg
-    bad_segment = '/image/upload/v1/media/'
-    if bad_segment in url:
-        url = url.replace(bad_segment, '/image/upload/', 1)
+    if not name:
+        return None
 
-    # Case 3: '/media/' injected without version
-    bad_segment2 = '/image/upload/media/'
-    if bad_segment2 in url:
-        url = url.replace(bad_segment2, '/image/upload/', 1)
+    # If it contains a Cloudinary domain, extract the relative path after '/image/upload/'
+    if 'res.cloudinary.com' in name:
+        marker = '/image/upload/'
+        idx = name.rfind(marker)
+        if idx != -1:
+            import re
+            relative = name[idx + len(marker):]
+            # Strip version prefix like 'v1234567890/'
+            relative = re.sub(r'^v\d+/', '', relative)
+            # Strip 'media/' prefix
+            if relative.startswith('media/'):
+                relative = relative[len('media/'):]
+            name = relative
 
-    return url
+    # Strip 'media/' prefix from plain relative paths
+    if name.startswith('media/'):
+        name = name[len('media/'):]
+
+    # Now build the Cloudinary URL using our cloud name from settings
+    cloud_name = getattr(settings, 'CLOUDINARY_CLOUD_NAME', None)
+    if cloud_name:
+        return f'https://res.cloudinary.com/{cloud_name}/image/upload/{name}'
+
+    # Fallback: try .url but catch errors
+    try:
+        return image_field.url
+    except Exception:
+        return None
 
 
 class PropertyImageSerializer(serializers.ModelSerializer):
@@ -56,12 +62,7 @@ class PropertyImageSerializer(serializers.ModelSerializer):
         fields = ('id', 'image', 'is_primary')
 
     def get_image(self, obj):
-        if obj.image:
-            try:
-                return _clean_cloudinary_url(obj.image.url)
-            except Exception:
-                return _clean_cloudinary_url(str(obj.image))
-        return None
+        return build_cloudinary_url(obj.image)
 
 
 class PropertyFeatureSerializer(serializers.ModelSerializer):
