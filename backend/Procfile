@@ -1,1 +1,1 @@
-web: gunicorn backend_core.wsgi --log-file -
+web: python manage.py migrate && python manage.py fix_image_urls && gunicorn backend_core.wsgi --log-file -
