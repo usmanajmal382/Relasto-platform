@@ -1,7 +1,7 @@
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from .models import Property, PropertyFeature
+from .models import Property, PropertyImage, PropertyFeature
 from .serializers import PropertySerializer, PropertyImageSerializer, PropertyFeatureSerializer
 
 class IsAgentOwnerOrReadOnly(permissions.BasePermission):
@@ -34,11 +34,34 @@ class PropertyViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated, IsAgentOwnerOrReadOnly])
     def upload_image(self, request, pk=None):
         property_obj = self.get_object()
-        serializer = PropertyImageSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(property=property_obj)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        if 'image' not in request.FILES:
+            return Response({'error': 'No image provided'}, status=status.HTTP_400_BAD_REQUEST)
+            
+        is_primary = request.data.get('is_primary', 'false').lower() == 'true'
+        
+        # Manually create the PropertyImage, matching the profile upload logic which works perfectly
+        image_obj = PropertyImage(
+            property=property_obj,
+            image=request.FILES['image'],
+            is_primary=is_primary
+        )
+        image_obj.save()
+        
+        serializer = PropertyImageSerializer(image_obj)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @action(detail=True, methods=['delete'], url_path='delete_image/(?P<image_id>[^/.]+)',
+            permission_classes=[permissions.IsAuthenticated, IsAgentOwnerOrReadOnly])
+    def delete_image(self, request, pk=None, image_id=None):
+        property_obj = self.get_object()
+        try:
+            image = PropertyImage.objects.get(id=image_id, property=property_obj)
+            image.delete()
+            return Response({'status': 'image deleted'}, status=status.HTTP_204_NO_CONTENT)
+        except PropertyImage.DoesNotExist:
+            return Response({'error': 'Image not found'}, status=status.HTTP_404_NOT_FOUND)
+
 
 class PropertyFeatureViewSet(viewsets.ModelViewSet):
     queryset = PropertyFeature.objects.all()
