@@ -55,14 +55,14 @@ def build_cloudinary_url(image_field):
 
 
 class PropertyImageSerializer(serializers.ModelSerializer):
-    image = serializers.SerializerMethodField()
-
     class Meta:
         model = PropertyImage
         fields = ('id', 'image', 'is_primary')
 
-    def get_image(self, obj):
-        return build_cloudinary_url(obj.image)
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        ret['image'] = build_cloudinary_url(instance.image)
+        return ret
 
 
 class PropertyFeatureSerializer(serializers.ModelSerializer):

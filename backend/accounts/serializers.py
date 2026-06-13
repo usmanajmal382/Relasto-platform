@@ -57,14 +57,14 @@ def build_cloudinary_url(image_field):
 
 
 class ProfileSerializer(serializers.ModelSerializer):
-    profile_picture = serializers.SerializerMethodField()
-
     class Meta:
         model = Profile
         fields = ('is_agent', 'phone_number', 'address', 'bio', 'profile_picture')
 
-    def get_profile_picture(self, obj):
-        return build_cloudinary_url(obj.profile_picture)
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        ret['profile_picture'] = build_cloudinary_url(instance.profile_picture)
+        return ret
 
 
 class UserSerializer(serializers.ModelSerializer):
