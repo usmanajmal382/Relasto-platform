@@ -1,14 +1,24 @@
 import { Link } from 'react-router-dom';
-import { MapPin, Bed, Bath, Square, User, ArrowRight } from 'lucide-react';
+import { MapPin, Bed, Bath, Square, User, ArrowRight, Trash2 } from 'lucide-react';
 
-export default function PropertyCard({ property }) {
+export default function PropertyCard({ property, onDelete }) {
   // Use first image if available, else a premium placeholder
   const imageUrl = property.images?.length > 0 
     ? property.images[0].image 
     : 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80';
 
   return (
-    <div className="bg-white rounded-[32px] overflow-hidden shadow-premium hover:shadow-brand/20 transition-all duration-500 border border-gray-50 group flex flex-col h-full transform hover:-translate-y-2 animate-scale-in">
+    <div className="bg-white rounded-[32px] overflow-hidden shadow-premium hover:shadow-brand/20 transition-all duration-500 border border-gray-50 group flex flex-col h-full transform hover:-translate-y-2 animate-scale-in relative">
+      {onDelete && (
+        <button 
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); onDelete(); }}
+          className="absolute top-4 right-4 z-20 bg-white/90 backdrop-blur-md p-3 rounded-full text-red-500 hover:bg-red-500 hover:text-white transition-colors shadow-lg"
+          title="Delete Property"
+        >
+          <Trash2 size={18} />
+        </button>
+      )}
+      
       <div className="relative h-72 shrink-0 overflow-hidden">
         <img 
           src={imageUrl} 

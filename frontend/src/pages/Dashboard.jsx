@@ -68,6 +68,18 @@ export default function Dashboard() {
     }
   }, [isAuthenticated]);
 
+  const handleDeleteProperty = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this property? This cannot be undone.")) return;
+    try {
+      await api.delete(`properties/${id}/`);
+      setProperties(prev => prev.filter(p => p.id !== id));
+      setAllProperties(prev => prev.filter(p => p.id !== id));
+    } catch (err) {
+      console.error("Error deleting property:", err);
+      alert("Failed to delete property.");
+    }
+  };
+
   const updateVisitStatus = async (id, status) => {
     try {
       await api.patch(`interactions/visits/${id}/`, { status });
@@ -235,8 +247,8 @@ export default function Dashboard() {
                   </div>
                 ) : (
                   properties.map((property, idx) => (
-                    <div key={property.id} className="animate-fade-in" style={{ animationDelay: `${idx * 0.1}s` }}>
-                      <PropertyCard property={property} />
+                    <div key={property.id} className="animate-fade-in relative" style={{ animationDelay: `${idx * 0.1}s` }}>
+                      <PropertyCard property={property} onDelete={() => handleDeleteProperty(property.id)} />
                     </div>
                   ))
                 )}
