@@ -75,6 +75,16 @@ class PropertyViewSet(viewsets.ModelViewSet):
             return Response({'error': 'Image not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
+    @action(detail=False, methods=['get'], permission_classes=[permissions.AllowAny])
+    def cleanup_broken(self, request):
+        """Temporary endpoint to clean up broken properties."""
+        deleted_count = 0
+        for p in Property.objects.all():
+            if not p.images.exists() or not p.images.first().image:
+                p.delete()
+                deleted_count += 1
+        return Response({'status': f'Deleted {deleted_count} broken properties.'})
+
 class PropertyFeatureViewSet(viewsets.ModelViewSet):
     queryset = PropertyFeature.objects.all()
     serializer_class = PropertyFeatureSerializer
